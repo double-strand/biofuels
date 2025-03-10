@@ -4,4 +4,4 @@ title: "About"
 
 The Earth receives approximately 5.5×10\^24 joules of solar energy per year. This is thousands of times more energy than humanity consumes annually! 🔥☀️🌍
 
-![Solar Energy Flow](assets/EarthEnrjThe diagram.webp)
+![Solar Energy Flow](assets/EarthEnrjThe%20diagram.webp)

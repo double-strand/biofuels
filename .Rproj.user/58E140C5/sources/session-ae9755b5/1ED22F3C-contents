@@ -8,6 +8,7 @@ website:
     left:
       - href: index.qmd
         text: Home
+      - dataSource.qmd
       - about.qmd
 
 format:
@@ -15,5 +16,6 @@ format:
     theme: cosmo
     css: styles.css
     toc: true
+    code-fold: true
 
 editor: visual

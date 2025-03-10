@@ -7,6 +7,20 @@
     "text": "The Earth receives approximately 5.5×10^24 joules of solar energy per year. This is thousands of times more energy than humanity consumes annually! 🔥☀️🌍\n\n\n\nSolar Energy Flow"
   },
   {
+    "objectID": "dataSource.html",
+    "href": "dataSource.html",
+    "title": "Authoritative Data Sources",
+    "section": "",
+    "text": "The U.S. Energy Information Administration(EIA)"
+  },
+  {
+    "objectID": "dataSource.html#eia-api-roots-endpoints",
+    "href": "dataSource.html#eia-api-roots-endpoints",
+    "title": "Authoritative Data Sources",
+    "section": "EIA API roots’ endpoints",
+    "text": "EIA API roots’ endpoints\n\nCode\neia_url &lt;- \"https://api.eia.gov/v2/\"\n\n# getting body data with httr2 request()\nEIA_Query_routes &lt;- request(eia_url) %&gt;%\n  req_headers(`x-api-key`  = api_key) %&gt;%\n  req_perform()\nroutes_result &lt;- resp_body_json(EIA_Query_routes)\n\neia_routes &lt;- do.call(\n  rbind, lapply(\n    1:length(routes_result[[1]][[4]]), \\(i) t(routes_result[[1]][[4]][[i]]))) %&gt;% \n  as.data.frame()\n\neia_routes$description &lt;- gsub(\"\\r\\n        \", \"\", eia_routes$description)\n\nDT::datatable(eia_routes, caption = \"EIA routes\")\n\n\n\n\nEIA API petroleum endpoints\n\nCode\nEIA_petroleum_Query &lt;- request(paste0(eia_url, \"petroleum/\")) %&gt;%\n  req_headers(`x-api-key`  = api_key) %&gt;%\n  req_perform()\npetroleum_routes_result &lt;- resp_body_json(EIA_petroleum_Query)\n\neia_petroleum_routes &lt;- do.call(\n  rbind, lapply(\n    1:length(petroleum_routes_result[[1]][[4]]), \\(i) t(petroleum_routes_result[[1]][[4]][[i]]))) %&gt;%\n  as.data.frame()\n\nDT::datatable(eia_petroleum_routes, caption = \"EIA Petroleum routes\")"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "biofuels",
