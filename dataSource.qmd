@@ -6,7 +6,7 @@ title: "Authoritative Data Sources"
 
 ```{r packages, echo = F, message = FALSE, warning = FALSE}
 devnull <- sapply(c("httr2", "jsonlite"), library, character.only = TRUE)
-api_key <- "slnmUl3glNaCUDrzdYgDDg42tJk3TqsUmuLquKUR"
+api_key <- Sys.getenv("API_KEY")
 ```
   
 ## EIA API roots' endpoints    
