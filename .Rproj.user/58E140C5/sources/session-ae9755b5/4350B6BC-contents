@@ -43,3 +43,23 @@ eia_petroleum_routes <- do.call(
 
 DT::datatable(eia_petroleum_routes, caption = "EIA Petroleum routes")
 ```
+  
+#### EIA API petroleum consumptions/sales endpoints   
+```{r APIPetroleumconsqueries, echo = T, message = FALSE, warning=FALSE, results='asis'}
+EIA_petroleum_cons_Query <- request(paste0(eia_url, "petroleum/cons/")) %>%
+  req_headers(`x-api-key` = api_key) %>%
+  req_perform()
+petroleum_routes_cons_result <- resp_body_json(EIA_petroleum_cons_Query)
+
+eia_petroleum_cons_routes <- do.call(
+  rbind,
+  lapply(
+    1:length(petroleum_routes_cons_result[[1]][[4]]),
+    \(i) t(petroleum_routes_cons_result[[1]][[4]][[i]])
+  )
+) %>%
+  as.data.frame()
+
+DT::datatable(eia_petroleum_cons_routes, caption = "EIA Petroleum consumptions/sales endpoints")
+```
+
