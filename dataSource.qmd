@@ -2,14 +2,15 @@
 title: "Authoritative Data Sources"
 ---
 
-* The [U.S. Energy Information Administration(EIA)](https://www.eia.gov/opendata/){target="_blank"}  
+-   The [U.S. Energy Information Administration(EIA)](https://www.eia.gov/opendata/){target="_blank"}
 
 ```{r packages, echo = F, message = FALSE, warning = FALSE}
 devnull <- sapply(c("httr2", "jsonlite"), library, character.only = TRUE)
 api_key <- Sys.getenv("API_KEY")
 ```
-  
-## EIA API roots' endpoints    
+
+## EIA API roots' endpoints
+
 ```{r APIqueries, echo = T, message = FALSE, warning=FALSE, results='asis'}
 eia_url <- "https://api.eia.gov/v2/"
 
@@ -28,8 +29,9 @@ eia_routes$description <- gsub("\r\n        ", "", eia_routes$description)
 
 DT::datatable(eia_routes, caption = "EIA routes")
 ```
-  
-### EIA API petroleum endpoints     
+
+### EIA API petroleum endpoints
+
 ```{r APIPetroleumqueries, echo = T, message = FALSE, warning=FALSE, results='asis'}
 EIA_petroleum_Query <- request(paste0(eia_url, "petroleum/")) %>%
   req_headers(`x-api-key`  = api_key) %>%
@@ -43,8 +45,9 @@ eia_petroleum_routes <- do.call(
 
 DT::datatable(eia_petroleum_routes, caption = "EIA Petroleum routes")
 ```
-  
-#### EIA API petroleum consumptions/sales endpoints   
+
+#### EIA API petroleum consumptions/sales endpoints
+
 ```{r APIPetroleumconsqueries, echo = T, message = FALSE, warning=FALSE, results='asis'}
 EIA_petroleum_cons_Query <- request(paste0(eia_url, "petroleum/cons/")) %>%
   req_headers(`x-api-key` = api_key) %>%
@@ -62,4 +65,3 @@ eia_petroleum_cons_routes <- do.call(
 
 DT::datatable(eia_petroleum_cons_routes, caption = "EIA Petroleum consumptions/sales endpoints")
 ```
-
