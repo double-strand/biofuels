@@ -4,13 +4,16 @@ title: "Tracking Diesel Fuel Consumption in the U.S."
 
 
 ```{r packages, echo = F, message = FALSE, warning = FALSE}
-devnull <- sapply(c("httr2", "jsonlite", "tidyverse"), library, character.only = TRUE)
+devnull <- sapply(c("gt", "httr2", "jsonlite", "tidyverse"), 
+                  library, character.only = TRUE)
 api_key <- Sys.getenv("API_KEY")
 ```
 
-## U.S. Diesel Use Over Time
+## U.S. Diesel Use Over Time  
+  
+  - US distillate fuel (diesel) consumption ranges from ≈ 1.07×10⁶ thousand barrels in 1990 to 1.43×10⁶ in 2023 with a peak at 1.53×10⁶ in 2007.  
 
-```{r dieselUScons, echo = T, message = FALSE, warning=FALSE, results='asis'}
+```{r dieselUScons, echo = T, message = FALSE, warning=FALSE, results='asis', fig.width= 12} 
 # retrieving EIA distillate fuel oil data 
 eia_url <- "https://api.eia.gov/v2/"
 
@@ -55,5 +58,32 @@ ggplot(eia_diesel_us.df, aes(x = period, y = value, group = 1)) +
     caption = "Source: U.S. Energy Information Administration (EIA), https://www.eia.gov/")
 
 ```
+  
+  - Since 2000, the median consumption is 1.43×10⁶ thousand barrels per year  
+  
+::: {.columns}
+::: {.column width="50%"}    
+```{r dieselUSconsDistrib, echo = T, message = FALSE, warning=FALSE, results='asis', fig.width=3, fig.height=4} 
+ggplot(eia_diesel_us.df[eia_diesel_us.df$period >2000,], aes(x="",y = value)) + 
+  geom_boxplot(fill = "#FFFFCC", color = "darkgray") + 
+  theme_minimal() + 
+  theme(title = element_text(size = 10, face = "bold"),
+        axis.text.y = element_text(size =6)) +
+  ggtitle("US diesel consumption distribution since 2000") +
+  labs(
+    title = "US diesel consumption\n distribution since 2000",
+    y = "Thousand Barrels (MBBL)",
+    x="")
+```
+:::
 
-
+::: {.column width="50%"}
+```{r dieselUSconsDistribstat, echo = T, message = FALSE, warning=FALSE, results='asis'} 
+enframe(summary(eia_diesel_us.df[eia_diesel_us.df$period >2000,]$value), name = "Statistic", value = "MBBL") %>%
+gt() %>%
+gt::tab_header(
+title = "US diesel consumption from 2000 to 2023"
+)
+```
+:::
+:::
