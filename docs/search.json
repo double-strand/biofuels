@@ -7,6 +7,13 @@
     "text": "The Earth receives approximately 5.5×10^24 joules of solar energy per year. This is thousands of times more energy than humanity consumes annually! 🔥☀️🌍\n\n\n\nSolar Energy Flow"
   },
   {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "biofuels",
+    "section": "",
+    "text": "Research and analysis of biofuels as potential cost-effective energy sources.\n\nPlant-based source of energy: energy crops\n\nThree types of bio fuels:\n\nethanol;\nalkanes (SAF and biomass based diesel, which includes biodiesel and renewable diesel);\nrenewable natural gas (RNG aka biomethane);\n\n\n\n\n\nBiofuelsCyccle"
+  },
+  {
     "objectID": "dataSource.html",
     "href": "dataSource.html",
     "title": "Authoritative Data Sources",
@@ -21,10 +28,17 @@
     "text": "EIA API roots’ endpoints\n\nCode\neia_url &lt;- \"https://api.eia.gov/v2/\"\n\n# getting body data with httr2 request()\nEIA_Query_routes &lt;- request(eia_url) %&gt;%\n  req_headers(`x-api-key`  = api_key) %&gt;%\n  req_perform()\nroutes_result &lt;- resp_body_json(EIA_Query_routes)\n\neia_routes &lt;- do.call(\n  rbind, lapply(\n    1:length(routes_result[[1]][[4]]), \\(i) t(routes_result[[1]][[4]][[i]]))) %&gt;% \n  as.data.frame()\n\neia_routes$description &lt;- gsub(\"\\r\\n        \", \"\", eia_routes$description)\n\nDT::datatable(eia_routes, caption = \"EIA routes\")\n\n\n\n\nEIA API petroleum endpoints\n\nCode\nEIA_petroleum_Query &lt;- request(paste0(eia_url, \"petroleum/\")) %&gt;%\n  req_headers(`x-api-key`  = api_key) %&gt;%\n  req_perform()\npetroleum_routes_result &lt;- resp_body_json(EIA_petroleum_Query)\n\neia_petroleum_routes &lt;- do.call(\n  rbind, lapply(\n    1:length(petroleum_routes_result[[1]][[4]]), \\(i) t(petroleum_routes_result[[1]][[4]][[i]]))) %&gt;%\n  as.data.frame()\n\nDT::datatable(eia_petroleum_routes, caption = \"EIA Petroleum routes\")\n\n\n\n\nEIA API petroleum consumptions/sales endpoints\n\nCode\nEIA_petroleum_cons_Query &lt;- request(paste0(eia_url, \"petroleum/cons/\")) %&gt;%\n  req_headers(`x-api-key` = api_key) %&gt;%\n  req_perform()\npetroleum_routes_cons_result &lt;- resp_body_json(EIA_petroleum_cons_Query)\n\neia_petroleum_cons_routes &lt;- do.call(\n  rbind,\n  lapply(\n    1:length(petroleum_routes_cons_result[[1]][[4]]),\n    \\(i) t(petroleum_routes_cons_result[[1]][[4]][[i]])\n  )\n) %&gt;%\n  as.data.frame()\n\nDT::datatable(eia_petroleum_cons_routes, caption = \"EIA Petroleum consumptions/sales endpoints\")"
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "biofuels",
+    "objectID": "USDieselUsage.html",
+    "href": "USDieselUsage.html",
+    "title": "Tracking Diesel Fuel Consumption in the U.S.",
     "section": "",
-    "text": "Research and analysis of biofuels as potential cost-effective energy sources.\n\nPlant-based source of energy: energy crops\n\nThree types of bio fuels:\n\nethanol;\nalkanes (SAF and biomass based diesel, which includes biodiesel and renewable diesel);\nrenewable natural gas (RNG aka biomethane);\n\n\n\n\n\nBiofuelsCyccle"
+    "text": "Code\n# retrieving EIA distillate fuel oil data \neia_url &lt;- \"https://api.eia.gov/v2/\"\n\neia_diesel_cons_query &lt;- request(paste0(eia_url, \"petroleum/cons/psup/data\")) %&gt;%\n  req_headers(`x-api-key` = api_key) %&gt;%\n  req_url_query(\n    `frequency` = \"annual\",\n    `data[0]` = \"value\",\n    `start` = \"1990\",\n    `end` = \"2024\",\n    #`length` = 10,\n    `facets[product][]` = \"EPD0\"   \n    #`facets[region][]` = \"US\"    \n    #`facets[sector][]` = \"TR\" \n  ) %&gt;%\n  req_perform()\n\ndiesel_data_result &lt;- resp_body_json(eia_diesel_cons_query)\n\neia_diesel_cons.df &lt;- diesel_data_result$response$data %&gt;%\n  bind_rows() %&gt;%\n  as_tibble()\n\neia_diesel_cons.df$value &lt;- as.numeric(eia_diesel_cons.df$value)\n\neia_diesel_us.df &lt;- eia_diesel_cons.df[eia_diesel_cons.df$`area-name` == \"U.S.\" & eia_diesel_cons.df$units == \"MBBL\",] \n\n\nggplot(eia_diesel_us.df, aes(x = period, y = value, group = 1)) +\n  geom_line(color = \"steelblue\", linewidth = 1) +\n  geom_point(color = \"steelblue\", size = 2.5) +\n  theme_minimal() + \n  #ylim(0,max(eia_diesel_us.df$value)) +\n  ylab(\"MBBL\") +\n  theme(axis.text.x = element_text(angle = 45, hjust = 1),\n        title = element_text(size = 16, face = \"bold\"),\n        plot.caption = element_text(size = 12)) +\n  labs(\n    title = \"Diesel Consumption Over Time in the US\",\n    x = \"Year\",\n    y = \"Million Barrels (MBBL)\",\n    caption = \"Source: U.S. Energy Information Administration (EIA), https://www.eia.gov/\")"
+  },
+  {
+    "objectID": "USDieselUsage.html#u.s.-diesel-use-over-time",
+    "href": "USDieselUsage.html#u.s.-diesel-use-over-time",
+    "title": "Tracking Diesel Fuel Consumption in the U.S.",
+    "section": "",
+    "text": "Code\n# retrieving EIA distillate fuel oil data \neia_url &lt;- \"https://api.eia.gov/v2/\"\n\neia_diesel_cons_query &lt;- request(paste0(eia_url, \"petroleum/cons/psup/data\")) %&gt;%\n  req_headers(`x-api-key` = api_key) %&gt;%\n  req_url_query(\n    `frequency` = \"annual\",\n    `data[0]` = \"value\",\n    `start` = \"1990\",\n    `end` = \"2024\",\n    #`length` = 10,\n    `facets[product][]` = \"EPD0\"   \n    #`facets[region][]` = \"US\"    \n    #`facets[sector][]` = \"TR\" \n  ) %&gt;%\n  req_perform()\n\ndiesel_data_result &lt;- resp_body_json(eia_diesel_cons_query)\n\neia_diesel_cons.df &lt;- diesel_data_result$response$data %&gt;%\n  bind_rows() %&gt;%\n  as_tibble()\n\neia_diesel_cons.df$value &lt;- as.numeric(eia_diesel_cons.df$value)\n\neia_diesel_us.df &lt;- eia_diesel_cons.df[eia_diesel_cons.df$`area-name` == \"U.S.\" & eia_diesel_cons.df$units == \"MBBL\",] \n\n\nggplot(eia_diesel_us.df, aes(x = period, y = value, group = 1)) +\n  geom_line(color = \"steelblue\", linewidth = 1) +\n  geom_point(color = \"steelblue\", size = 2.5) +\n  theme_minimal() + \n  #ylim(0,max(eia_diesel_us.df$value)) +\n  ylab(\"MBBL\") +\n  theme(axis.text.x = element_text(angle = 45, hjust = 1),\n        title = element_text(size = 16, face = \"bold\"),\n        plot.caption = element_text(size = 12)) +\n  labs(\n    title = \"Diesel Consumption Over Time in the US\",\n    x = \"Year\",\n    y = \"Million Barrels (MBBL)\",\n    caption = \"Source: U.S. Energy Information Administration (EIA), https://www.eia.gov/\")"
   }
 ]

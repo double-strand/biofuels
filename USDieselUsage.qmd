@@ -1,0 +1,59 @@
+---
+title: "Tracking Diesel Fuel Consumption in the U.S."
+---
+
+
+```{r packages, echo = F, message = FALSE, warning = FALSE}
+devnull <- sapply(c("httr2", "jsonlite", "tidyverse"), library, character.only = TRUE)
+api_key <- Sys.getenv("API_KEY")
+```
+
+## U.S. Diesel Use Over Time
+
+```{r dieselUScons, echo = T, message = FALSE, warning=FALSE, results='asis'}
+# retrieving EIA distillate fuel oil data 
+eia_url <- "https://api.eia.gov/v2/"
+
+eia_diesel_cons_query <- request(paste0(eia_url, "petroleum/cons/psup/data")) %>%
+  req_headers(`x-api-key` = api_key) %>%
+  req_url_query(
+    `frequency` = "annual",
+    `data[0]` = "value",
+    `start` = "1990",
+    `end` = "2024",
+    #`length` = 10,
+    `facets[product][]` = "EPD0"   
+    #`facets[region][]` = "US"    
+    #`facets[sector][]` = "TR" 
+  ) %>%
+  req_perform()
+
+diesel_data_result <- resp_body_json(eia_diesel_cons_query)
+
+eia_diesel_cons.df <- diesel_data_result$response$data %>%
+  bind_rows() %>%
+  as_tibble()
+
+eia_diesel_cons.df$value <- as.numeric(eia_diesel_cons.df$value)
+
+eia_diesel_us.df <- eia_diesel_cons.df[eia_diesel_cons.df$`area-name` == "U.S." & eia_diesel_cons.df$units == "MBBL",] 
+
+
+ggplot(eia_diesel_us.df, aes(x = period, y = value, group = 1)) +
+  geom_line(color = "steelblue", linewidth = 1) +
+  geom_point(color = "steelblue", size = 2.5) +
+  theme_minimal() + 
+  #ylim(0,max(eia_diesel_us.df$value)) +
+  ylab("MBBL") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        title = element_text(size = 16, face = "bold"),
+        plot.caption = element_text(size = 12)) +
+  labs(
+    title = "Diesel Consumption Over Time in the US",
+    x = "Year",
+    y = "Million Barrels (MBBL)",
+    caption = "Source: U.S. Energy Information Administration (EIA), https://www.eia.gov/")
+
+```
+
+
